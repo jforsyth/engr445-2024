@@ -52,7 +52,14 @@ int main()
 
 	//open the file
 	in.open(filePath.c_str());
-    
+
+    if(in.fail())
+    {
+        cout << "Failed opening file: " << filePath << endl;
+        cout << "Could not open file! Check file path. Consider using an absolute path.";
+        return -1;
+    }
+
 
     /**
      * Create containers to hold the accel X, Y, and Z data
