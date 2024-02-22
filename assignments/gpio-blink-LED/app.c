@@ -18,8 +18,7 @@
 /***************************************************************************//**
  * Initialize application.
  ******************************************************************************/
-void
-app_init (void)
+void app_init (void)
 {
 }
 
@@ -35,6 +34,8 @@ app_init (void)
 #include "em_cmu.h"
 #include "em_emu.h"
 #include "em_gpio.h"
+
+#include <stdint.h>
 
 /**
  * Place definitions of useful registers below using the
