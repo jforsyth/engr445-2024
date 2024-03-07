@@ -101,6 +101,10 @@ int main()
          * AccelX = [3]
          * GyroX = [4]
          * ... etc
+         * 
+         * If you are operating on a file with a different structure, adjust the values
+         * 1, 2, and 3 below to be the columns that hold the X, Y, and Z acceleration.
+         * 0 is the "first column", 1 is the "second"..etc.
          */
         float x = atof(subParts[1].c_str());
         float y = atof(subParts[2].c_str());
