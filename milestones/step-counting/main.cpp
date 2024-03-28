@@ -69,10 +69,20 @@ int main()
     vector<float> accelY;
     vector<float> accelZ;
 
+    vector<float> magnitude;
+    vector<float> diff;
+    vector<float> square;
+    vector<float> moving_average;
+
+    const int N = 10;
+
+
     /**
      * Create any initial global variables your program might need...
      */
-     enum State {STATE_A, STATE_B, STATE_C};
+     enum State {INIT,STATE_A, STATE_B, STATE_C};
+     State currentState = INIT;
+     State nextState = INIT;
      int threshold = -1;
 
     //while there's data in the file...
@@ -130,6 +140,18 @@ int main()
         accelY.push_back(y);
         accelZ.push_back(z);
 
+        /**
+         *  The data arrays should now be a fixed length. Perform a test to see
+         *  if the vector is "too long" and then drop the first element. All vectors will
+         *  need to be a fixed length on the board, otherwise, memory will be exhausted.
+         */
+         if(accelX.size()>N)
+         {
+             accelX.erase(accelX.begin());
+             accelY.erase(accelY.begin());
+             accelZ.erase(accelZ.begin());
+         }
+
         // comment the line below to quiet all the data coming out...
         cout << "X: " << x << "\tY:" << y << "\tZ: " << z << endl;
 
@@ -144,6 +166,33 @@ int main()
          */
 
         // your code here
+        switch(currentState)
+        {
+            case INIT:
+                /**
+                 * Use this state to initialize all vectors/arrays to the best length.
+                 * Assume the acceleration vectors are of length N
+                 */
+                for(int i=0;i<N;i++)
+                {
+                    accelX.push_back(0);
+                    accelY.push_back(0);
+                    accelZ.push_back(0);
+                    magnitude.push_back(0);
+                }
+
+                /**
+                 * Assume the derived vectors are of length N-1
+                 */
+                for(int i=0;i<N-1;i++)
+                {
+                    diff.push_back(0);
+                    square.push_back(0);
+                    moving_average.push_back(0);
+                }
+
+                break;
+        }
 
 	}
 
