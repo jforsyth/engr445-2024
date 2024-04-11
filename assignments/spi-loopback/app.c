@@ -95,7 +95,7 @@ void setup_SPI()
    * Calculate desired clock speed (USARTn_CLKDIV) based upon formula below.
    * ADXL345 max speed is 5 MHz. Recommend selecting 1 MHz.
    *
-   * USARTn_CLKDIV = 256 * (f_hfperclk/(2*desired_br)-1)
+   * USARTn_CLKDIV = 256 * (usart1Clock/(2*desired_br)-1)
    */
   //query the USART clock to confirm value
   int usart1Clock = CMU_ClockFreqGet(cmuClock_USART1);
