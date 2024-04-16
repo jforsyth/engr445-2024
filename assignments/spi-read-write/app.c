@@ -23,6 +23,14 @@
  */
 USART_TypeDef* usart = USART1;
 
+void delay(int num)
+{
+	int counter=0;
+	for(int i=0;i<num*1000;i++)
+	{
+		counter++;
+	}
+}
 
 void setup_clocks()
 {
