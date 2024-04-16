@@ -60,8 +60,6 @@ void app_process_action(void)
 
     int32_t magnitude = sqrt(xReading*xReading + yReading*yReading + zReading*zReading);
 
-    float g_magnitude = magnitude / 256.0;
-
     int dummy = 0;
 
 }
