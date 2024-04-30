@@ -8,9 +8,10 @@
 //include custom timer object
 #include "PeriodicTimer.h"
 
-//include vectors and math
+//include vectors, math, string
 #include <vector>
 #include <cmath>
+#include <string>
 
 //define appropriate namespace
 using namespace std;
