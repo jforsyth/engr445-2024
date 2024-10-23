@@ -1,54 +1,95 @@
-/***
-   Simple program for reporting the accelerometer X, Y, and Z axis values.
-   Based upon the MMA8452Q Example program from SparkFun by Jim Lindblom
+/******************************************************************************
+  Example1_BasicReadings.ino
+  Read values of x/y/z axis of the ADXL313 (via I2C), print them to terminal.
+  This uses default configuration (1G range, full resolution, 100Hz datarate).
 
-   Rev 1 - Jason Forsyth - 2/17/19
-*/
+  SparkFun ADXL313 Arduino Library
+  Pete Lewis @ SparkFun Electronics
+  Original Creation Date: September 19, 2020
+  https://github.com/sparkfun/SparkFun_ADXL313_Arduino_Library
 
-//include Wire Library to access i2c
+  Do you like this library? Help support SparkFun. Buy a board!
+
+    SparkFun 3-Axis Digital Accelerometer Breakout - ADXL313 (Qwiic)
+    https://www.sparkfun.com/products/17241  
+
+  Development environment specifics:
+
+  IDE: Arduino 1.8.13
+  Hardware Platform: SparkFun Redboard Qwiic
+  SparkFun 3-Axis Digital Accelerometer Breakout - ADXL313 (Qwiic) Version: 1.0
+
+  Hardware Connections:
+  Use a qwiic cable to connect from the Redboard Qwiic to the ADXL313 breakout (QWIIC).
+  You can also choose to wire up the connections using the header pins like so:
+
+  ARDUINO --> ADXL313
+  SDA (A4) --> SDA
+  SCL (A5) --> SCL
+  3.3V --> 3.3V
+  GND --> GND
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+******************************************************************************/
+
 #include <Wire.h>
+#include <SparkFunADXL313.h> //Click here to get the library: http://librarymanager/All#SparkFun_ADXL313
+ADXL313 myAdxl;
 
-//include the MMA8452 library
-#include "SparkFun_MMA8452Q.h"
+float accel_range = -1;
 
-//create a handle to the accelerometer
-MMA8452Q accel;
-
-
-void setup() {
+void setup()
+{
   Serial.begin(9600);
+  Serial.println("Example 1 - Reading values from ADXL313");
 
-  // initialize but set to 4gs
-  accel.init(SCALE_4G);
+  Wire.begin();
 
+  if (myAdxl.begin() == false) //Begin communication over I2C
+  {
+    Serial.println("The sensor did not respond. Please check wiring.");
+    while(1); //Freeze
+  }
+  Serial.print("Sensor is connected properly.");
+
+  myAdxl.setRange(ADXL313_RANGE_4_G);
+  
+  myAdxl.measureModeOn(); // wakes up the sensor from standby and puts it into measurement mode
+
+  accel_range = 4;
 }
 
-void loop() {
-
-  //Request the x-acceleration. Note: this calls the read() function implicitly
-  //instead of explicitly like the SparkFun example. All accelerations are in g's.
-
-  if (accel.available())
+void loop()
+{
+  if(myAdxl.dataReady()) // check data ready interrupt, note, this clears all other int bits in INT_SOURCE reg
   {
-    float xAccel = accel.getCalculatedX();
+    myAdxl.readAccel(); // read all 3 axis, they are stored in class variables: myAdxl.x, myAdxl.y and myAdxl.z
 
-    float yAccel = accel.getCalculatedY();
+    int x_accel = myAdxl.x;
+    int y_accel = myAdxl.y;
+    int z_accel = myAdxl.z;
 
-
-    float zAccel = accel.getCalculatedZ();
-
-    Serial.print(xAccel, 3); //print to three decimal places
-
+    float x_gs=(float)x_accel/512.0 * accel_range;
+    float y_gs=(float)y_accel/512.0 * accel_range;
+    float z_gs=(float)z_accel/512.0 * accel_range;
+    
+    Serial.print(millis());
     Serial.print(",");
-    Serial.print(yAccel, 3); //print to three decimal places
-
+    Serial.print(x_gs);
     Serial.print(",");
-    Serial.println(zAccel, 3); //print to three decimal places
+    Serial.print(y_gs);
+    Serial.print(",");
+    Serial.println(z_gs);
   }
-
-
-
-  //delay 20ms for a 50Hz sample rate
-  delay(20);
-
+  else
+  {
+    Serial.println("Waiting for dataReady.");
+  }  
+  delay(50);
 }
