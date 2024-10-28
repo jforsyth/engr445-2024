@@ -57,7 +57,7 @@ bool app_init(void)
      * Will use FOR LOOP that is very inefficient but is guaranteed to work on all systems
      */
 
-    for(int i=0;i<16;i++)
+    for(int i=0;i<ARRAY_LENGTH;i++)
     {
         magnitude[i]=0;
         diffs[i]=0;
@@ -156,6 +156,7 @@ bool app_process_action(void)
     float mag = sqrt(x*x + y*y + z*z);
 
 
+
     /**
      * Step 3: Utilize finite state machine to determine whether a step has been detected.
      */
@@ -164,15 +165,42 @@ bool app_process_action(void)
 
     case(IDLE):
         // do what is needed in the IDLE state. We'll just stay here as an example
-        nextState=IDLE;
+
+        /**
+         * Implement the STATE actions
+         */
+
+
+        /**
+         * Implement the STATE nextState logic
+         */
+
         break;
 
     case(DETECT):
         // do what is needed in the DETECT state
+
+        /**
+        * Implement the STATE actions
+        */
+
+
+        /**
+         * Implement the STATE nextState logic
+         */
         break;
 
     case(TIMEOUT):
         // do what is needed in the TIMEOUT state
+
+        /**
+        * Implement the STATE actions
+        */
+
+
+        /**
+         * Implement the STATE nextState logic
+         */
         break;
 
     default:
