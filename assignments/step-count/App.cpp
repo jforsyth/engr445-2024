@@ -1,4 +1,5 @@
 #include "App.h"
+#include <cmath>
 using namespace std;
 
 bool splits(std::string line, std::vector<std::string>& container)
