@@ -2,9 +2,6 @@
 //include accelerometer class
 #include "ADXL345.h"
 
-//include XBee to talk to computer
-#include "Xbee.h"
-
 //include custom timer object
 #include "PeriodicTimer.h"
 
@@ -19,11 +16,26 @@ using namespace std;
 //ADXL object
 ADXL345 accel;
 
-//Xbee object
-Xbee xbee;
-
 //Timer object
 PeriodicTimer timer;
+
+
+/**
+ * Define all global variables and data arrays
+ */
+const int ARRAY_LENGTH = 16;
+float magnitude[ARRAY_LENGTH];
+float diffs[ARRAY_LENGTH];
+float squares[ARRAY_LENGTH];
+float averages[ARRAY_LENGTH];
+
+/**
+ * Enumerate some basic states the machine may wish to follow
+ */
+enum STATE {IDLE, DETECT, TIMEOUT};
+STATE currentState;
+STATE nextState;
+
 
 /**
  * Place all operations here that will be run "once". These include initializing the
@@ -38,6 +50,23 @@ void app_init(void)
   //enable the specific clock for the TIMER0
   CMU_ClockEnable(cmuClock_TIMER0, true);
 
+  /**
+   * Initial all arrays defined above to known values. Really should be 0.
+   * Will use FOR LOOP that is very inefficient but is guaranteed to work on all systems
+   */
+
+  for(int i=0;i<ARRAY_LENGTH;i++)
+    {
+      magnitude[i]=0;
+      diffs[i]=0;
+      squares[i]=0;
+      averages[i]=0;
+    }
+
+  // Initialize the states of the machine to the initial one
+  currentState = IDLE;
+  nextState = IDLE;
+
   //initialize accelerometer
   accel.initialize();
 
@@ -45,9 +74,6 @@ void app_init(void)
 
   //infinite loop if self-test fails
   while(!success){}
-
-  //initialize Xbee
-  xbee.initialize();
 
   //initialize periodic timer
   timer.initialize();
@@ -60,44 +86,7 @@ void app_init(void)
 
 }
 
-
-
-/**
- * Initialize all global/static variables
- */
-
-
-//containers for raw accel data
-vector<float> accelX;
-vector<float> accelY;
-vector<float> accelZ;
-
-//results of datapath
-vector<float> magnitude;
-vector<float> diff;
-vector<float> square;
-vector<float> moving_average;
-const int N = 10;
-int mySteps = 0;
-
-//any FSM data that might be needed
-enum State {
-  INIT, STATE_A, STATE_B, STATE_C
-};
-State currentState = INIT;
-State nextState = INIT;
-int threshold = -1;
-bool initialized = false;
-
-/**
- * Place all code that will happen "everytime" in this block. Should include
- * - Acquiring Data from Accel
- * - Processing Data in Datapath
- * - Determining whether a step has occurred via FSM
- * - Report steps via Xbee
- * - Sleep processor (optional)
- */
-
+int counter = 0;
 void app_process_action(void)
 {
 
@@ -108,9 +97,7 @@ void app_process_action(void)
   int16_t yAccel = accel.getYAcceleration();
   int16_t zAccel = accel.getZAcceleration();
 
-  accelX.push_back(xAccel);
-  accelY.push_back(yAccel);
-  accelZ.push_back(zAccel);
+
 
   /**
    * Step 2: Put new acceleration data through data path
@@ -120,23 +107,26 @@ void app_process_action(void)
 
   int32_t mag = sqrt(xAccel*xAccel + yAccel*yAccel + zAccel*zAccel);
 
+  float g_magnitude = mag / 256.0;
+
   /**
-   * Step 3: Decide whether a step has occurred
+   * Step 3: Run your analysis pipeline
    */
 
+  // YOUR DATAPATH CODE HERE....
+
+
+  /**
+   * Step 4: Run your finite state machine
+   */
   //YOUR FSM CODE HERE. Example code below.
 
 
 
-  /**
-   * Step 4: Report what you like back to the PC via Xbee
-   * Use to_string() to convert anything to a string
-   */
-  string s = to_string(mySteps);
-  xbee.sendString(s);
 
   /**
-   * Step 5: Sleep the processor for 1s
+   * Step 5: Sleep the processor for a fixed duration. This will be the
+   * sample rate for the project.
    */
   // wait for 1s = 1000 ms
   timer.wait(1000);
